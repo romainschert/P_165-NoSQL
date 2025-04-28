@@ -19,7 +19,7 @@ const UserController = {
       })
       .catch((error) => {
         console.error('ADD USER: ', error);
-        if (error && error.name === 'SequelizeUniqueConstraintError') {
+        if (error) {
           return res.status(409).json({
             message: 'Un compte avec cet email exist déjà !'
           });

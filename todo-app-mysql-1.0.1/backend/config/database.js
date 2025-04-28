@@ -1,28 +1,25 @@
 const { Sequelize, DataTypes } = require('sequelize');
+const mongoose = require('mongoose');
 
-const sequelize = new Sequelize(process.env.DB_URL, {
-  dialect: 'mysql', // Assurez-vous que le dialecte est correct
-  logging: false,
-  pool: {
-    max: 5,
-    min: 0,
-    acquire: 30000,
-    idle: 10000
-  },
-  // don't add the timestamp attributes (updatedAt, createdAt)
-  define: {
-    timestamps: false
-  },
-  // The retry config if Deadlock Happened
-  retry: {
-    match: [/Deadlock/i],
-    max: 3, // Maximum retry 3 times
-    backoffBase: 1000, // Initial backoff duration in ms. Default: 100,
-    backoffExponent: 1.5 // Exponent to increase backoff each try. Default: 1.1
-  }
-});
-
-module.exports = {
-  sequelize,
-  DataTypes
+// Options de connexion
+const options = {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  serverSelectionTimeoutMS: 30000, // temps d'acquisition (équivalent à acquire)
+  socketTimeoutMS: 10000, // temps d'inactivité (équivalent à idle)
+  maxPoolSize: 5, // max connections dans le pool
+  minPoolSize: 0, // min connections
+  autoIndex: false, // équivalent à timestamps: false pour éviter la création automatique d'index
+  retryWrites: true // MongoDB gère nativement certains retries
 };
+
+// Connexion
+mongoose
+  .connect(process.env.DB_URL, options)
+  .then(() => console.log('MongoDB connected'))
+  .catch((err) => {
+    console.error('MongoDB connection error:', err);
+    // Ici, on pourrait ajouter une logique de retry manuel si besoin
+  });
+
+module.exports = mongoose;
