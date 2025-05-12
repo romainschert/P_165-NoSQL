@@ -58,18 +58,27 @@ const TodoController = {
     try {
       const user_id = req.sub;
       const todo_id = req.params.id;
-      const deletedTodo = await TodoModel.findOneAndDelete({ _id: todo_id, user_id: user_id });
-      if (deletedTodo) {
-        return res.status(200).json({ id: todo_id });
-      } else {
-        return res.status(404).send();
+
+      if (!mongoose.Types.ObjectId.isValid(todo_id)) {
+        return res.status(400).json({ message: 'Invalid todo ID format' });
       }
+
+      const todo = await Todo.findOneAndDelete({ _id: todo_id, user: user_id });
+
+      if (!todo) {
+        return res.status(404).json({ message: 'Todo not found' });
+      }
+
+      //Pour le futur
+      const redisClient = req.app.locals.redisClient;
+      await redisClient.del(`todos_${user_id}`);
+
+      res.status(200).json({ id: todo_id });
     } catch (error) {
-      console.error('DELETE TODO: ', error);
-      return res.status(500).send();
+      console.error('DELETE TODO:', error);
+      res.status(500).json({ message: 'Error deleting todo' });
     }
   },
-
   getSearchTodo: async (req, res) => {
     try {
       const user_id = req.sub;
