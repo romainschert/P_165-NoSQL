@@ -39,6 +39,7 @@ const TodoController = {
       const todo_id = req.params.id;
       const data = req.body;
       const todo = await TodoModel.findOne({ _id: todo_id, user_id: user_id });
+      console.log(todo);
       if (todo) {
         todo.completed = data.completed !== undefined ? data.completed : todo.completed;
         todo.text = data.text !== undefined ? data.text : todo.text;
@@ -55,25 +56,21 @@ const TodoController = {
   },
 
   deleteTodo: async (req, res) => {
+    console.log(req.params.id);
+    console.log(req.sub);
     try {
       const user_id = req.sub;
       const todo_id = req.params.id;
 
-      if (!mongoose.Types.ObjectId.isValid(todo_id)) {
-        return res.status(400).json({ message: 'Invalid todo ID format' });
-      }
+      const todo = await TodoModel.findOneAndDelete({ _id: todo_id, user_id: user_id });
 
-      const todo = await Todo.findOneAndDelete({ _id: todo_id, user: user_id });
+      console.log('test : ' + todo);
 
       if (!todo) {
         return res.status(404).json({ message: 'Todo not found' });
       }
 
-      //Pour le futur
-      const redisClient = req.app.locals.redisClient;
-      await redisClient.del(`todos_${user_id}`);
-
-      res.status(200).json({ id: todo_id });
+      res.status(200).json({ _id: todo_id });
     } catch (error) {
       console.error('DELETE TODO:', error);
       res.status(500).json({ message: 'Error deleting todo' });

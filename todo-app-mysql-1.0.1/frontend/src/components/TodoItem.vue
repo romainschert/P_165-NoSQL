@@ -17,7 +17,7 @@ const props = defineProps({
     required: true
   },
   todoId: {
-    type: Number,
+    type: String,
     required: true
   },
   todoCompleted: {
@@ -27,13 +27,13 @@ const props = defineProps({
 });
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const toggleTodoCompleted = async (id: any, completed: boolean) => {
-  await todoStore.updateTodo(id, { completed: completed });
+const toggleTodoCompleted = async (_id: string, completed: boolean) => {
+  await todoStore.updateTodo(_id, { completed: completed });
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const deleteTodoItem = async (id: any) => {
-  await todoStore.deleteTodo(id);
+const deleteTodoItem = async (_id: string) => {
+  await todoStore.deleteTodo(_id);
 };
 
 const emit = defineEmits(['update:todoCompleted']);
@@ -74,7 +74,6 @@ const todoCompletedLocal = computed({
       <div class="flex flex-1 align-middle justify-end">
         <Toggle
           v-model="todoCompletedLocal"
-          @change="toggleTodoCompleted(todoId, todoCompletedLocal)"
           :classes="{
             container:
               'inline-block w-[70px] rounded-full outline-none focus:ring-2 focus:ring-slate-400 focus:ring-opacity-30',

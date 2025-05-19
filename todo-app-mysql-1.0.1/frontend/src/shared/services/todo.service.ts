@@ -16,9 +16,9 @@ export async function createTodo(todoForm: TodoForm): Promise<ResponseData> {
 }
 
 // update todo
-export async function updateTodo(id: string, todoForm: TodoUpdateForm): Promise<ResponseData> {
+export async function updateTodo(_id: string, todoForm: TodoUpdateForm): Promise<ResponseData> {
   const response = await fetchWrapper.patch(
-    `${BASE_URL}/${id}`,
+    `${BASE_URL}/${_id}`,
     todoForm as unknown as Record<string, unknown>
   );
   if (!response) {
@@ -28,8 +28,8 @@ export async function updateTodo(id: string, todoForm: TodoUpdateForm): Promise<
 }
 
 // delete todo
-export async function deleteTodo(id: string): Promise<ResponseData> {
-  const response = await fetchWrapper.delete(`${BASE_URL}/${id}`);
+export async function deleteTodo(_id: string): Promise<ResponseData> {
+  const response = await fetchWrapper.delete(`${BASE_URL}/${_id}`);
   if (!response) {
     throw new Error('Erreur lors de la suppression du todo: la réponse est nulle');
   }
