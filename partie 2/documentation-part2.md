@@ -1,6 +1,14 @@
 # Documentation P_165
 
+## Avant de commencer
+
+Les deux parties n'utilisent pas les mêmes conteneurs. Pour la partie 2, supprime les conteneurs de la partie 1, puis exécute le docker-compose de la partie 2.
+
 ## 1. Restore
+
+#### Ou ouvrir le terminal
+
+Ouvre le terminal au même niveau que le dossier backupdb.
 
 #### Verifier que le container a comme volume:
 
@@ -37,8 +45,10 @@ mongorestore --gzip
 | `--authenticationDatabase=admin`               | Précise que l’authentification doit être effectuée par un admin.                                                                                         |
 
 ## 2. Création des rôles personnalisés
+Dans cette section, nous définissons trois rôles MongoDB adaptés aux différents niveaux d’accès nécessaires à la base db_mflix.
 
-Dans cette section, nous définissons trois rôles MongoDB adaptés aux différents niveaux d’accès nécessaires à la base `db_mflix`.
+Toutes les commandes suivantes sont exécutées dans le shell de MongoDB Compass. Veille donc à les exécuter également dans le shell intégré à Compass, et ce, dans le contexte de la base de données db_mflix.
+
 
 ---
 
@@ -75,14 +85,14 @@ db.createRole({
 db.createRole({
   role: "utilisateurRole",
   privileges: [
-    { resource: { db: "db_mflix" }, actions: ["find"] },
+    { resource: { db: "db_mflix", collection: "movies"}, actions: ["find"] },
     {
       resource: { db: "db_mflix", collection: "comments" },
       actions: ["insert"],
     },
   ],
   roles: [],
-});
+});,
 ```
 
 **Droits accordés** :
@@ -99,19 +109,26 @@ db.createRole({
   role: "adminRole",
   privileges: [
     {
-      resource: { db: "db_mflix" },
-      actions: ["find", "insert", "update", "remove"],
+      resource: { db: "db_mflix", collection: "" },
+      actions: ["find", "insert", "update", "remove"]
     },
-    { resource: { db: "db_mflix" }, actions: ["grantRole", "revokeRole"] },
     {
-      resource: { db: "db_mflix" },
-      actions: ["createCollection", "dropCollection"],
+      resource: { db: "db_mflix", collection: "" },
+      actions: ["createCollection", "dropCollection"]
     },
+    {
+      resource: { db: "db_mflix", collection: "" },
+      actions: ["createIndex", "dropIndex"]
+    },
+    {
+      resource: { db: "db_mflix", collection: "" },
+      actions: ["grantRole", "revokeRole"]
+    }
   ],
   roles: [
     { role: "userAdmin", db: "db_mflix" },
-    { role: "dbAdmin", db: "db_mflix" },
-  ],
+    { role: "dbAdmin", db: "db_mflix" }
+  ]
 });
 ```
 
@@ -137,7 +154,7 @@ Chaque utilisateur se voit attribuer un mot de passe et un rôle défini ci-dess
 ```js
 db.createUser({
   user: "admin",
-  pwd: "adminPWD",
+  pwd: "admin",
   roles: [{ role: "adminRole", db: "db_mflix" }],
 });
 ```
@@ -151,7 +168,7 @@ db.createUser({
 ```js
 db.createUser({
   user: "utilisateur",
-  pwd: "utilisateurPWD",
+  pwd: "utilisateur",
   roles: [{ role: "utilisateurRole", db: "db_mflix" }],
 });
 ```
@@ -165,7 +182,7 @@ db.createUser({
 ```js
 db.createUser({
   user: "gestionnaire",
-  pwd: "gestionPWD",
+  pwd: "gestion",
   roles: [{ role: "gestionnaireRole", db: "db_mflix" }],
 });
 ```

@@ -2,9 +2,9 @@ Première partie :
 
 a) Utiliser MongoDB à la place de MySQL ==> Fini
 
-b) Implémenter correctement la recherche de Todo avec MongoD ==> En cours
+b) Implémenter correctement la recherche de Todo avec MongoD ==> Fini
 
-c) Ajouter du cache applicatif Redis pour optimiser les appelles API ==> En cours
+c) Ajouter du cache applicatif Redis pour optimiser les appelles API ==> Fini
 
 
 Deuxième partie : 
